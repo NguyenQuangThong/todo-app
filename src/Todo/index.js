@@ -33,19 +33,32 @@ const Todo = () => {
 
   useEffect(() => {
     const data = localStorage.getItem("list");
+    const check = localStorage.getItem("isCheck");
     if (data) setList(JSON.parse(data));
+    if (check) setIsCheck(JSON.parse(check));
   }, []);
 
   const handleCheckAll = (e) => {
     setIsCheckAll(!isCheckAll);
-    setIsCheck(list.map((i) => i));
-    if (isCheckAll) setIsCheck([]);
+    const temp = list.map((i) => i);
+    localStorage.setItem("isCheck", JSON.stringify(temp));
+    setIsCheck(temp);
+    if (isCheckAll) {
+      localStorage.setItem("isCheck", null);
+      setIsCheck([]);
+    }
   };
 
   const handleClick = (e) => {
     const { id, checked, name } = e.target;
-    setIsCheck([...isCheck, { id: parseInt(id), value: name }]);
-    if (!checked) setIsCheck(isCheck.filter((i) => i.id !== parseInt(id)));
+    const temp = [...isCheck, { id: parseInt(id), value: name }];
+    localStorage.setItem("isCheck", JSON.stringify(temp));
+    setIsCheck(temp);
+    if (!checked) {
+      const temp = isCheck.filter((i) => i.id !== parseInt(id));
+      localStorage.setItem("isCheck", JSON.stringify(temp));
+      setIsCheck(temp);
+    }
   };
 
   const pressEnter = (e) => {
