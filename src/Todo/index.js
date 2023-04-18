@@ -11,11 +11,11 @@ const Todo = () => {
   const originalData = [
     {
       id: 0,
-      value: 1,
+      value: "1",
     },
     {
       id: 1,
-      value: 2,
+      value: "2",
     },
   ];
 
@@ -29,6 +29,7 @@ const Todo = () => {
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
   const [list, setList] = useState([]);
+  const [button, setButton] = useState(true);
 
   useEffect(() => {
     const data = localStorage.getItem("list");
@@ -37,14 +38,14 @@ const Todo = () => {
 
   const handleCheckAll = (e) => {
     setIsCheckAll(!isCheckAll);
-    setIsCheck(list.map((i) => i.id));
+    setIsCheck(list.map((i) => i));
     if (isCheckAll) setIsCheck([]);
   };
 
   const handleClick = (e) => {
-    const { id, checked } = e.target;
-    setIsCheck([...isCheck, parseInt(id)]);
-    if (!checked) setIsCheck(isCheck.filter((i) => i !== parseInt(id)));
+    const { id, checked, name } = e.target;
+    setIsCheck([...isCheck, { id: parseInt(id), value: name }]);
+    if (!checked) setIsCheck(isCheck.filter((i) => i.id !== parseInt(id)));
   };
 
   const pressEnter = (e) => {
@@ -69,7 +70,23 @@ const Todo = () => {
   };
 
   const all = (e) => {
-    console.log("Show all");
+    setList(JSON.parse(localStorage.getItem("list")));
+    setButton(true);
+  };
+
+  const active = (e) => {
+    setButton(false);
+    let temp = JSON.parse(localStorage.getItem("list"));
+    for (let i = 0; i < isCheck.length; i++)
+      if (temp.filter((item) => item.id !== isCheck[i].id).length >= 0) {
+        temp = temp.filter((item) => item.id !== isCheck[i].id);
+      }
+    setList(temp);
+  };
+
+  const completed = (e) => {
+    setButton(false);
+    setList(isCheck);
   };
 
   let List = list.map((item) => {
@@ -81,7 +98,7 @@ const Todo = () => {
             id={item.id}
             name={item.value}
             onChange={handleClick}
-            checked={isCheck.includes(item.id)}
+            checked={isCheck.filter((i) => i.id === item.id).length > 0}
           />
           &nbsp;
           {item.value}
@@ -95,18 +112,29 @@ const Todo = () => {
     );
   });
 
-  return (
-    <div className="todo">
-      <Add onKeyDown={pressEnter}></Add>
-      <div className="list1">{List}</div>
-      <hr></hr>
+  const checkAll = button ? (
+    <div>
       <CheckAll
         change={handleCheckAll}
         isCheck={isCheck.length}
         list={list.length}
       ></CheckAll>
       <hr></hr>
-      <Status all={all}></Status>
+    </div>
+  ) : (
+    ""
+  );
+
+  return (
+    <div>
+      <h1>TO DO LIST</h1>
+      <div className="todo">
+        <Add onKeyDown={pressEnter}></Add>
+        <div className="list1">{List}</div>
+        <hr></hr>
+        {checkAll}
+        <Status all={all} active={active} completed={completed}></Status>
+      </div>
     </div>
   );
 };

@@ -1,4 +1,22 @@
 .status {
-    display: flex;
-    width: 100%;
+  display: flex;
+  width: 100%;
+}
+button {
+  background-color: rgb(16, 141, 250);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  padding: 4px 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 10px;
+  margin: 4px 2px;
+}
+button:hover {
+  background-color: #0662f7;
+}
+.active {
+  background: lightgreen;
 }
