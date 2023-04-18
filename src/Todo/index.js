@@ -26,6 +26,12 @@ const Todo = () => {
     console.log("Set local storage");
     localStorage.setItem("list", JSON.stringify(originalData));
   }
+  if (
+    !localStorage.getItem("isCheck") ||
+    JSON.parse(localStorage.getItem("isCheck").length === 0)
+  ) {
+    localStorage.setItem("isCheck", []);
+  }
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
   const [list, setList] = useState([]);
@@ -44,7 +50,7 @@ const Todo = () => {
     localStorage.setItem("isCheck", JSON.stringify(temp));
     setIsCheck(temp);
     if (isCheckAll) {
-      localStorage.setItem("isCheck", null);
+      localStorage.setItem("isCheck", []);
       setIsCheck([]);
     }
   };
