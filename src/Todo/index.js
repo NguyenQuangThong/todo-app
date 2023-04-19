@@ -28,23 +28,63 @@ const Todo = () => {
   }
   if (
     !localStorage.getItem("isCheck") ||
-    JSON.parse(localStorage.getItem("isCheck").length === 0)
+    JSON.parse(localStorage.getItem("isCheck")).length === 0
   ) {
-    localStorage.setItem("isCheck", []);
+    localStorage.setItem("isCheck", JSON.stringify([]));
   }
+  if (
+    !localStorage.getItem("isCheckAll") ||
+    JSON.parse(localStorage.getItem("isCheckAll")).length === 0
+  ) {
+    localStorage.setItem("isCheckAll", false);
+  }
+
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
   const [list, setList] = useState([]);
   const [button, setButton] = useState(true);
+  const [status, setStatus] = useState("active");
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const data = localStorage.getItem("list");
     const check = localStorage.getItem("isCheck");
+    const checkAll = localStorage.getItem("isCheckAll");
     if (data) setList(JSON.parse(data));
     if (check) setIsCheck(JSON.parse(check));
+    if (checkAll) setIsCheckAll(JSON.parse(checkAll));
   }, []);
 
+  useEffect(() => {
+    switch (index) {
+      case 0:
+        all();
+        break;
+      case 1:
+        active();
+        break;
+      case 2:
+        completed();
+        break;
+      default:
+        break;
+    }
+  }, [isCheck]);
+
+  useEffect(() => {
+    if (
+      localStorage.getItem("isCheck").length === JSON.stringify(list).length
+    ) {
+      localStorage.setItem("isCheckAll", true);
+      setIsCheckAll(true);
+    } else {
+      localStorage.setItem("isCheckAll", false);
+      setIsCheckAll(false);
+    }
+  }, [isCheck, list]);
+
   const handleCheckAll = (e) => {
+    localStorage.setItem("isCheckAll", !isCheckAll);
     setIsCheckAll(!isCheckAll);
     const temp = list.map((i) => i);
     localStorage.setItem("isCheck", JSON.stringify(temp));
@@ -83,14 +123,21 @@ const Todo = () => {
   };
 
   const remove = (data) => {
-    const rest = list.filter((i) => i !== data);
-    localStorage.setItem("list", JSON.stringify(rest));
-    setList(rest);
+    const listRemain = list.filter((i) => i !== data);
+    const isCheckRemain = isCheck.filter((i) =>
+      JSON.stringify(listRemain).includes(JSON.stringify(i))
+    );
+    localStorage.setItem("list", JSON.stringify(listRemain));
+    localStorage.setItem("isCheck", JSON.stringify(isCheckRemain));
+    setList(listRemain);
+    setIsCheck(isCheckRemain);
   };
 
   const all = (e) => {
     setList(JSON.parse(localStorage.getItem("list")));
     setButton(true);
+    setStatus("active");
+    setIndex(0);
   };
 
   const active = (e) => {
@@ -100,12 +147,18 @@ const Todo = () => {
       if (temp.filter((item) => item.id !== isCheck[i].id).length >= 0) {
         temp = temp.filter((item) => item.id !== isCheck[i].id);
       }
+    localStorage.setItem("list", JSON.stringify(temp));
     setList(temp);
+    setStatus("active");
+    setIndex(1);
   };
 
   const completed = (e) => {
+    localStorage.setItem("list", JSON.stringify(isCheck));
     setButton(false);
     setList(isCheck);
+    setStatus("active");
+    setIndex(2);
   };
 
   let List = list.map((item) => {
@@ -126,17 +179,19 @@ const Todo = () => {
           icon={faXmark}
           onClick={() => remove(item)}
           className="remove"
+          style={{ width: "10px" }}
         ></FontAwesomeIcon>
       </div>
     );
   });
 
-  const checkAll = button ? (
+  const checkAllButton = button ? (
     <div>
       <CheckAll
         change={handleCheckAll}
         isCheck={isCheck.length}
         list={list.length}
+        isCheckAll={isCheckAll}
       ></CheckAll>
       <hr></hr>
     </div>
@@ -151,8 +206,14 @@ const Todo = () => {
         <Add onKeyDown={pressEnter}></Add>
         <div className="list1">{List}</div>
         <hr></hr>
-        {checkAll}
-        <Status all={all} active={active} completed={completed}></Status>
+        {checkAllButton}
+        <Status
+          all={all}
+          active={active}
+          completed={completed}
+          status={status}
+          index={index}
+        ></Status>
       </div>
     </div>
   );

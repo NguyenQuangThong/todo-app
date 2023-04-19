@@ -15,8 +15,8 @@ button {
   margin: 4px 2px;
 }
 button:hover {
-  background-color: #0662f7;
+  background-color: #1c40f7;
 }
 .active {
-  background: lightgreen;
+  background: #1c40f7;
 }
