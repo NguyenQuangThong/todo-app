@@ -29,21 +29,13 @@ const Todo = () => {
   }
 
   const [isCheckAll, setIsCheckAll] = useState(false);
-  const [isCheck, setIsCheck] = useState([]);
-  const [list, setList] = useState([]);
+  const [isCheck, setIsCheck] = useState(
+    JSON.parse(localStorage.getItem("isCheck"))
+  );
+  const [list, setList] = useState(JSON.parse(localStorage.getItem("list")));
   const [button, setButton] = useState(true);
-  const [status, setStatus] = useState("active");
   const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const data = localStorage.getItem("list");
-    console.log(typeof JSON.parse(data));
-    const check = localStorage.getItem("isCheck");
-    const checkAll = localStorage.getItem("isCheckAll");
-    if (data) setList(JSON.parse(data));
-    if (check) setIsCheck(JSON.parse(check));
-    if (checkAll) setIsCheckAll(JSON.parse(checkAll));
-  }, []);
+  const status = "active";
 
   useEffect(() => {
     switch (index) {
@@ -59,6 +51,7 @@ const Todo = () => {
       default:
         break;
     }
+    localStorage.setItem("isCheck", JSON.stringify(isCheck));
   }, [isCheck]);
 
   useEffect(() => {
@@ -77,10 +70,8 @@ const Todo = () => {
     localStorage.setItem("isCheckAll", !isCheckAll);
     setIsCheckAll(!isCheckAll);
     const temp = list.map((i) => i);
-    localStorage.setItem("isCheck", JSON.stringify(temp));
     setIsCheck(temp);
     if (isCheckAll) {
-      localStorage.setItem("isCheck", []);
       setIsCheck([]);
     }
   };
@@ -88,11 +79,9 @@ const Todo = () => {
   const handleClick = (e) => {
     const { id, checked, name } = e.target;
     const temp = [...isCheck, { id: parseInt(id), value: name }];
-    localStorage.setItem("isCheck", JSON.stringify(temp));
     setIsCheck(temp);
     if (!checked) {
       const temp = isCheck.filter((i) => i.id !== parseInt(id));
-      localStorage.setItem("isCheck", JSON.stringify(temp));
       setIsCheck(temp);
     }
   };
@@ -121,7 +110,6 @@ const Todo = () => {
       JSON.stringify(listRemain).includes(JSON.stringify(i))
     );
     localStorage.setItem("list", JSON.stringify(listRemain));
-    localStorage.setItem("isCheck", JSON.stringify(isCheckRemain));
     console.log(data);
     setList(listRemain);
     setIsCheck(isCheckRemain);
@@ -130,7 +118,6 @@ const Todo = () => {
   const all = (e) => {
     setList(JSON.parse(localStorage.getItem("list")));
     setButton(true);
-    setStatus("active");
     setIndex(0);
   };
 
@@ -142,14 +129,12 @@ const Todo = () => {
         temp = temp.filter((item) => item.id !== isCheck[i].id);
       }
     setList(temp);
-    setStatus("active");
     setIndex(1);
   };
 
   const completed = (e) => {
     setButton(false);
     setList(isCheck);
-    setStatus("active");
     setIndex(2);
   };
 
