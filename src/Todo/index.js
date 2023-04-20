@@ -129,6 +129,7 @@ const Todo = () => {
     );
     localStorage.setItem("list", JSON.stringify(listRemain));
     localStorage.setItem("isCheck", JSON.stringify(isCheckRemain));
+    console.log(data);
     setList(listRemain);
     setIsCheck(isCheckRemain);
   };
@@ -147,14 +148,12 @@ const Todo = () => {
       if (temp.filter((item) => item.id !== isCheck[i].id).length >= 0) {
         temp = temp.filter((item) => item.id !== isCheck[i].id);
       }
-    localStorage.setItem("list", JSON.stringify(temp));
     setList(temp);
     setStatus("active");
     setIndex(1);
   };
 
   const completed = (e) => {
-    localStorage.setItem("list", JSON.stringify(isCheck));
     setButton(false);
     setList(isCheck);
     setStatus("active");
@@ -175,38 +174,41 @@ const Todo = () => {
           &nbsp;
           {item.value}
         </div>
-        <FontAwesomeIcon
-          icon={faXmark}
-          onClick={() => remove(item)}
-          className="remove"
-          style={{ width: "10px" }}
-        ></FontAwesomeIcon>
+
+        {index === 0 ? (
+          <FontAwesomeIcon
+            icon={faXmark}
+            onClick={() => remove(item)}
+            className="remove"
+            style={{ width: "10px" }}
+          ></FontAwesomeIcon>
+        ) : (
+          ""
+        )}
       </div>
     );
   });
-
-  const checkAllButton = button ? (
-    <div>
-      <CheckAll
-        change={handleCheckAll}
-        isCheck={isCheck.length}
-        list={list.length}
-        isCheckAll={isCheckAll}
-      ></CheckAll>
-      <hr></hr>
-    </div>
-  ) : (
-    ""
-  );
 
   return (
     <div>
       <h1>TO DO LIST</h1>
       <div className="todo">
-        <Add onKeyDown={pressEnter}></Add>
+        {index === 0 ? <Add onKeyDown={pressEnter}></Add> : ""}
         <div className="list1">{List}</div>
         <hr></hr>
-        {checkAllButton}
+        {button ? (
+          <div>
+            <CheckAll
+              change={handleCheckAll}
+              isCheck={isCheck.length}
+              list={list.length}
+              isCheckAll={isCheckAll}
+            ></CheckAll>
+            <hr></hr>
+          </div>
+        ) : (
+          ""
+        )}
         <Status
           all={all}
           active={active}
