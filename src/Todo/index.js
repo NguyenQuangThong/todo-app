@@ -8,23 +8,12 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Todo = () => {
-  const originalData = [
-    {
-      id: 0,
-      value: "1",
-    },
-    {
-      id: 1,
-      value: "2",
-    },
-  ];
-
   if (
     !localStorage.getItem("list") ||
     JSON.parse(localStorage.getItem("list")).length === 0
   ) {
     console.log("Set local storage");
-    localStorage.setItem("list", JSON.stringify(originalData));
+    localStorage.setItem("list", JSON.stringify([]));
   }
   if (
     !localStorage.getItem("isCheck") ||
@@ -48,6 +37,7 @@ const Todo = () => {
 
   useEffect(() => {
     const data = localStorage.getItem("list");
+    console.log(typeof JSON.parse(data));
     const check = localStorage.getItem("isCheck");
     const checkAll = localStorage.getItem("isCheckAll");
     if (data) setList(JSON.parse(data));
@@ -111,10 +101,13 @@ const Todo = () => {
     if (e.keyCode === 13) {
       if (e.target.value === "") alert("Enter the task first, You poor!");
       else {
-        const newList = [
-          ...list,
-          { id: list[list.length - 1].id + 1, value: e.target.value },
-        ];
+        let newList;
+        if (list.length > 0) {
+          newList = [
+            ...list,
+            { id: list[list.length - 1].id + 1, value: e.target.value },
+          ];
+        } else newList = [{ id: 0, value: e.target.value }];
         e.target.value = "";
         localStorage.setItem("list", JSON.stringify(newList));
         setList(newList);
@@ -174,7 +167,6 @@ const Todo = () => {
           &nbsp;
           {item.value}
         </div>
-
         {index === 0 ? (
           <FontAwesomeIcon
             icon={faXmark}
