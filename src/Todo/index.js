@@ -97,11 +97,14 @@ const Todo = () => {
             ...list,
             { id: list[list.length - 1].id + 1, value: e.target.value },
           ];
-        } else newList = [{ id: 0, value: e.target.value }];
+          setEnter(list[list.length - 1].id + 1);
+        } else {
+          newList = [{ id: 0, value: e.target.value }];
+          setEnter(0);
+        }
         e.target.value = "";
         localStorage.setItem("list", JSON.stringify(newList));
         setList(newList);
-        setEnter(list[list.length - 1].id + 1);
       }
     }
   };
