@@ -22,3 +22,16 @@ h1 {
   text-align: center;
   color: rgb(35, 98, 245);
 }
+.child {
+  animation: fadeInAnimation 0.2s linear;
+}
+@keyframes fadeInAnimation {
+  from {
+    /* opacity: 0; */
+    transform: translate3d(0, -20%, 0);
+  }
+  to {
+    /* opacity: 1; */
+    transform: translate3d(0, 0, 0);
+  }
+}

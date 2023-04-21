@@ -35,6 +35,7 @@ const Todo = () => {
   const [list, setList] = useState(JSON.parse(localStorage.getItem("list")));
   const [button, setButton] = useState(true);
   const [index, setIndex] = useState(0);
+  const [enter, setEnter] = useState(-1);
   const status = "active";
 
   useEffect(() => {
@@ -100,6 +101,7 @@ const Todo = () => {
         e.target.value = "";
         localStorage.setItem("list", JSON.stringify(newList));
         setList(newList);
+        setEnter(list[list.length - 1].id + 1);
       }
     }
   };
@@ -110,7 +112,6 @@ const Todo = () => {
       JSON.stringify(listRemain).includes(JSON.stringify(i))
     );
     localStorage.setItem("list", JSON.stringify(listRemain));
-    console.log(data);
     setList(listRemain);
     setIsCheck(isCheckRemain);
   };
@@ -141,7 +142,7 @@ const Todo = () => {
   let List = list.map((item) => {
     return (
       <div className="list" key={item.id}>
-        <div>
+        <div className={`${item.id === enter ? "child" : ""}`}>
           <CheckBox
             type="checkbox"
             id={item.id}
